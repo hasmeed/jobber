@@ -25,7 +25,7 @@ SECRET_KEY = 'r%eqy$!^eb^%vt^v@v*u#41+x#pn_nsllrzt@)4rflk@=vdw44'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hasmeed.pythonanywhere.com/']
+ALLOWED_HOSTS = ['hasmeed.pythonanywhere.com', 'localhost']
 
 
 # Application definition
@@ -122,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/hasmeed/jobber/static'
 
 
 REST_FRAMEWORK = {
