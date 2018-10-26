@@ -115,7 +115,7 @@ LANGUAGE_CODE = 'en-us'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-AUTH_USER_MODEL = 'jobhunt.Identity'
+# AUTH_USER_MODEL = 'jobhunt.Identity'
 
 TIME_ZONE = 'UTC'
 
