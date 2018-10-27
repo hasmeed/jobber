@@ -19,10 +19,21 @@ class parentCategory(generics.ListCreateAPIView):
     queryset = Category.objects.all()
 
 
-class Service(generics.ListCreateAPIView):
+class ServicesApi(generics.ListCreateAPIView):
     """
     Base API endpoint that display all services and new service can also be posted to it
     """
     serializer_class = ServiceSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Service.objects.all()
+
+
+class getParentCategoryServices(generics.ListCreateAPIView):
+    serializer_class = ServiceSerializer
+    permission_classes = []
+
+    def get_queryset(self, *args, **kwargs):
+        query = self.kwargs.get("category_slug")
+        if query is not None:
+            qs = Service.objects.filter(category__slug=query)
+            return qs

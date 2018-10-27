@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .utils import unique_slug_generator
 from django.db.models.signals import pre_save
+from rest_framework.reverse import reverse as api_reverse
 
 
 
@@ -67,7 +68,7 @@ class Category(CommonInfo):
 
     @property
     def title(self):
-        return self.name
+        return self.name 
 
     def __str__(self):                          
         full_path = [self.name]                  
@@ -80,11 +81,14 @@ class Category(CommonInfo):
 
         return ' -> '.join(full_path[::-1])
 
-def category_pre_save_reciever(sender, instance, *args, **kwargs):
+    def get_services_uri(self,request=None):
+        return api_reverse('api:categoryServices', kwargs={'category_slug':self.slug}, request=request)
+
+def klass_pre_save_reciever(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = unique_slug_generator(instance)
 
-pre_save.connect(category_pre_save_reciever, Category)
+pre_save.connect(klass_pre_save_reciever, Category)
 
 
 
@@ -96,6 +100,9 @@ class Service(CommonInfo):
     inclusions = models.TextField(help_text='enter each inclusion here sepereted with comma')
     exclusions = models.TextField(help_text='enter each inclusion here sepereted with comma')
     procedure = models.TextField(help_text='enter procedure to carry out the service')
+
+    def get_cat(self):
+        return self.category.slug
 
     def get_cat_list(self):           
         k = self.category
@@ -113,6 +120,8 @@ class Service(CommonInfo):
 
     def get_service_exclusions(self):
         return self.exclusions.split(',')
+
+pre_save.connect(klass_pre_save_reciever, Service)
 
 
 # class Education(CommonInfo):
