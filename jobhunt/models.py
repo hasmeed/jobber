@@ -4,6 +4,7 @@ from .utils import unique_slug_generator
 from django.db.models.signals import pre_save
 
 
+
 # class Identity(AbstractUser):
 #     is_provider = models.BooleanField(default=False)
 #     is_seeker = models.BooleanField(default=False)
@@ -90,6 +91,7 @@ pre_save.connect(category_pre_save_reciever, Category)
 class Service(CommonInfo):
     title = models.CharField(max_length=120)
     category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.CASCADE)
+    price = models.CharField(max_length=120, null=True, blank=True,)
     approximate_time = models.CharField(max_length=120)
     inclusions = models.TextField(help_text='enter each inclusion here sepereted with comma')
     exclusions = models.TextField(help_text='enter each inclusion here sepereted with comma')
