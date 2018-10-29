@@ -52,10 +52,3 @@ class SeekerSerializer(serializers.ModelSerializer):
     #         pass
     #     elif validated_data.pop('is_seeker'):
     #         Seeker.objects
-
-
-class IdentitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Identity
-        exclude = ['id', 'last_login', 'is_superuser',
-                   'is_staff', 'is_active', 'date_joined', 'groups', 'user_permissions']

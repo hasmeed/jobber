@@ -11,6 +11,12 @@ class Identity(AbstractUser):
     is_seeker = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
 
+    def get_account_type(self):
+        if self.is_provider:
+            return 'Provider'
+        else:
+            return 'Seeker'
+
 
 class CommonInfo(models.Model):
     IsActive = models.BooleanField(default=True)

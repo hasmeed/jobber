@@ -16,7 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view('JobErrand Api developed by hasmeed')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-docs/', schema_view),
     path('api/', include('jobhunt.api.urls', namespace='api')),
+    path('auth/', include('jobhunt.authApi.urls', namespace='authApi')),
 ]
