@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from ..models import Category, Service, Seeker
+from django.contrib.auth import get_user_model
+
+Identity = get_user_model()
 
 
 class CategoryService(serializers.PrimaryKeyRelatedField):
@@ -37,3 +40,22 @@ class ServiceSerializer(serializers.ModelSerializer):
     # def get_cat(self, obj):
     #     # request = self.context.get("request")
     #     return obj.get_cat()
+
+
+class SeekerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seeker
+        exclude = ['IsActive', 'IsDeleted', 'id']
+
+    # def create(self, validated_data):
+    #     if validated_data.pop('is_provider'):
+    #         pass
+    #     elif validated_data.pop('is_seeker'):
+    #         Seeker.objects
+
+
+class IdentitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Identity
+        exclude = ['id', 'last_login', 'is_superuser',
+                   'is_staff', 'is_active', 'date_joined', 'groups', 'user_permissions']

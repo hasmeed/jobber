@@ -6,9 +6,10 @@ from rest_framework.reverse import reverse as api_reverse
 
 
 
-# class Identity(AbstractUser):
-#     is_provider = models.BooleanField(default=False)
-#     is_seeker = models.BooleanField(default=False)
+class Identity(AbstractUser):
+    is_provider = models.BooleanField(default=False)
+    is_seeker = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
 
 
 class CommonInfo(models.Model):
@@ -22,22 +23,22 @@ class CommonInfo(models.Model):
         abstract = True
 
 
-# class CommonAccountInfo(CommonInfo):
-#     firstname = models.CharField(max_length=50, null=True, blank=True)
-#     lastname = models.CharField(max_length=50, null=True, blank=True)
-#     email = models.CharField(max_length=50, null=True, blank=True)
-#     phonenumber = models.CharField(max_length=120, null=True, blank=True)
-#     address = models.CharField(max_length=120, null=True, blank=True)
-#     landline = models.CharField(max_length=120, null=True, blank=True)
-#     skype = models.CharField(max_length=120, null=True, blank=True)
-#     website = models.CharField(max_length=120, null=True, blank=True)
+class CommonAccountInfo(CommonInfo):
+    firstname = models.CharField(max_length=50, null=True, blank=True)
+    lastname = models.CharField(max_length=50, null=True, blank=True)
+    email = models.CharField(max_length=50, null=True, blank=True)
+    phonenumber = models.CharField(max_length=120, null=True, blank=True)
+    address = models.CharField(max_length=120, null=True, blank=True)
+    landline = models.CharField(max_length=120, null=True, blank=True)
+    skype = models.CharField(max_length=120, null=True, blank=True)
+    website = models.CharField(max_length=120, null=True, blank=True)
 
-#     class Meta:
-#         abstract = True
+    class Meta:
+        abstract = True
 
 
 class Seeker(CommonInfo):
-    # identity = models.OneToOneField(Identity, on_delete=models.CASCADE)
+    identity = models.OneToOneField(Identity, on_delete=models.CASCADE, default='2')
     salary = models.CharField(max_length=120, null=True, blank=True)
     location = models.CharField(max_length=120, null=True, blank=True)
     headline = models.CharField(max_length=120, null=True, blank=True)
@@ -54,7 +55,7 @@ class Seeker(CommonInfo):
     youtube = models.CharField(max_length=120, null=True, blank=True)
     dribbble = models.CharField(max_length=120, null=True, blank=True)
 
-    # end of social media
+    #end of social media
 
 
 class Category(CommonInfo):
@@ -65,6 +66,9 @@ class Category(CommonInfo):
         unique_together = ('slug', 'parent',)    #enforcing that there can not be two
         verbose_name_plural = "categories"       #categories under a parent with same 
                                                  #slug 
+    # @property
+    # def owner(self):
+    #     return self.identity
 
     @property
     def title(self):
@@ -122,6 +126,10 @@ class Service(CommonInfo):
         return self.exclusions.split(',')
 
 pre_save.connect(klass_pre_save_reciever, Service)
+
+class Job(CommonInfo):
+    job = models.ForeignKey(Service, on_delete=models.CASCADE)
+    
 
 
 # class Education(CommonInfo):
