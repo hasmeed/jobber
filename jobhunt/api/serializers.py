@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from ..models import Category, Service, Seeker
+from ..models import Category, Service, Seeker, Address
 from django.contrib.auth import get_user_model
+from ..authApi.serializers import IdentitySerializer
+
 
 Identity = get_user_model()
 
@@ -8,6 +10,12 @@ Identity = get_user_model()
 class CategoryService(serializers.PrimaryKeyRelatedField):
     def get_queryset(self):
         return Category.objects.all()
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        exclude = ['IsActive', 'IsDeleted', 'id', 'slug']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -43,9 +51,16 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class SeekerSerializer(serializers.ModelSerializer):
+    identity = IdentitySerializer(required=False)
+    address = AddressSerializer(required=False)
+
     class Meta:
         model = Seeker
-        exclude = ['IsActive', 'IsDeleted', 'id']
+        fields = ['identity', 'address', 'about', 'profileImage',
+                  'takingJob', 'securityQuestion', 'securityAnswer', 'enableTwoStepVerification', 'facebook', 'google', 'phonenumber']
+        # exclude = ['IsActive', 'IsDeleted', 'id', 'identity']
+        read_only_fields = ('phoneIsVerified', 'identity',
+                            'emailIsVerified', 'facebookIsVerified', 'online', 'slug')
 
     # def create(self, validated_data):
     #     if validated_data.pop('is_provider'):

@@ -1,24 +1,9 @@
 from rest_framework import generics
-from ..models import Category, Service
+from ..models import Category, Service, Seeker
 from .serializers import CategorySerializer, ServiceSerializer, SeekerSerializer
 from rest_framework import permissions
-# from rest_framework_jwt.settings import api_settings
-# from django.contrib.auth import get_user_model
-# from django.core.exceptions import ValidationError
 from rest_framework.response import Response
-
-# from rest_framework_jwt.utils import jwt_payload_handler, jwt_encode_handler
-
-
-# payload_handler = jwt_payload_handler
-# encode_handler = jwt_encode_handler
-
-# Identity = get_user_model()
-
-# class NewCategory(generics.CreateAPIView):
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-#     serializer_class = CategorySerializer
-#     queryset = Category.objects.all()
+from .permission import IsOwnerOrReadOnly, IsProviderOrReadOnly, IsSeekerOrReadOnly
 
 
 class parentCategory(generics.ListCreateAPIView):
@@ -51,3 +36,28 @@ class getParentCategoryServices(generics.ListCreateAPIView):
         if query is not None:
             qs = Service.objects.filter(category__slug=query)
             return qs
+
+
+class NewSeeker(generics.CreateAPIView):
+    lookup_field = 'pk'
+    serializer_class = SeekerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(identity=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class AllSeeker(generics.ListAPIView):
+    serializer_class = SeekerSerializer
+    permission_classes = []
+    queryset = Seeker.objects.all()
+
+
+class Seeker(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = 'slug'
+    serializer_class = SeekerSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+    queryset = Seeker.objects.all()

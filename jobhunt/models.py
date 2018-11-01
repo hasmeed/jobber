@@ -4,7 +4,9 @@ from .utils import unique_slug_generator
 from django.db.models.signals import pre_save
 from rest_framework.reverse import reverse as api_reverse
 
-
+def klass_pre_save_reciever(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = unique_slug_generator(instance)
 
 class Identity(AbstractUser):
     is_provider = models.BooleanField(default=False)
@@ -42,26 +44,77 @@ class CommonAccountInfo(CommonInfo):
     class Meta:
         abstract = True
 
+class Address(CommonInfo):
+    country = models.CharField(max_length = 120)
+    state = models.CharField(max_length = 120)
+    city = models.CharField(max_length = 120)
+    zipcode = models.CharField(max_length = 120)
+    fulladdress = models.CharField(max_length = 120)
+    latitude = models.CharField(max_length = 120)
+    longitude = models.CharField(max_length = 120)
 
-class Seeker(CommonInfo):
+class Notification(CommonInfo):
+    # Desktop Notification
+    profileViews = models.BooleanField(default=True)
+    newMessage = models.BooleanField(default=True)
+    newfavourite = models.BooleanField(default=True)
+    jobStatus = models.BooleanField(default=True)
+    # EndDesktop Notification
+ 
+class Seeker(CommonAccountInfo):
     identity = models.OneToOneField(Identity, on_delete=models.CASCADE, default='2')
-    salary = models.CharField(max_length=120, null=True, blank=True)
-    location = models.CharField(max_length=120, null=True, blank=True)
-    headline = models.CharField(max_length=120, null=True, blank=True)
-    age = models.CharField(max_length=120, null=True, blank=True)
-    # tags = models.CharField(max_length = 120, null=True, blank=True)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True, blank=True)
+    notification = models.OneToOneField(Notification, on_delete=models.CASCADE, null=True, blank=True)
+    about = models.TextField(null=True, blank=True)
+    profileImage = models.ImageField(null=True, upload_to='seeker', blank=True, height_field='height_field', width_field='width_field')
+    takingJob = models.BooleanField(default=True)
+    online = models.BooleanField(default=True)
 
     # social media
     facebook = models.CharField(max_length=120, null=True, blank=True)
     google = models.CharField(max_length=120, null=True, blank=True)
-    pintrest = models.CharField(max_length=120, null=True, blank=True)
-    twitter = models.CharField(max_length=120, null=True, blank=True)
-    git = models.CharField(max_length=120, null=True, blank=True)
-    instagram = models.CharField(max_length=120, null=True, blank=True)
-    youtube = models.CharField(max_length=120, null=True, blank=True)
-    dribbble = models.CharField(max_length=120, null=True, blank=True)
-
+    # pintrest = models.CharField(max_length=120, null=True, blank=True)
+    # twitter = models.CharField(max_length=120, null=True, blank=True)
+    # git = models.CharField(max_length=120, null=True, blank=True)
+    # instagram = models.CharField(max_length=120, null=True, blank=True)
+    # youtube = models.CharField(max_length=120, null=True, blank=True)
+    # dribbble = models.CharField(max_length=120, null=True, blank=True)
     #end of social media
+
+    #verification
+    phoneIsVerified = models.BooleanField(default=False)
+    emailIsVerified = models.BooleanField(default=False)
+    facebookIsVerified = models.BooleanField(default=False)
+    #end of verification
+
+    securityQuestion = models.CharField(max_length = 120, null=True, blank=True)
+    securityAnswer = models.CharField(max_length = 120, null=True, blank=True)
+
+    enableTwoStepVerification = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.identity.username
+    
+    @property
+    def title(self):
+        return self.identity.username
+
+    @property
+    def owner(self):
+        return self.identity
+
+    def isActive(self):
+        return self.IsActive
+
+    def isOnline(self):
+        return self.online     
+
+    def isTakingJob(self):
+        return self.takingJob
+
+    def Accountdeactivate(self):
+        self.IsActive = False
+pre_save.connect(klass_pre_save_reciever, Seeker)
 
 
 class Category(CommonInfo):
@@ -94,9 +147,7 @@ class Category(CommonInfo):
     def get_services_uri(self,request=None):
         return api_reverse('api:categoryServices', kwargs={'category_slug':self.slug}, request=request)
 
-def klass_pre_save_reciever(sender, instance, *args, **kwargs):
-    if not instance.slug:
-        instance.slug = unique_slug_generator(instance)
+
 
 pre_save.connect(klass_pre_save_reciever, Category)
 
