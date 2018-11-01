@@ -4,6 +4,7 @@ from .serializers import CategorySerializer, ServiceSerializer, SeekerSerializer
 from rest_framework import permissions
 from rest_framework.response import Response
 from .permission import IsOwnerOrReadOnly, IsProviderOrReadOnly, IsSeekerOrReadOnly
+from django.shortcuts import get_object_or_404
 
 
 class parentCategory(generics.ListCreateAPIView):
@@ -38,7 +39,10 @@ class getParentCategoryServices(generics.ListCreateAPIView):
             return qs
 
 
-class NewSeeker(generics.CreateAPIView):
+class NewWorker(generics.CreateAPIView):
+    """
+    Base API endpoint that can be use to post new worker
+    """
     lookup_field = 'pk'
     serializer_class = SeekerSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -50,14 +54,41 @@ class NewSeeker(generics.CreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class AllSeeker(generics.ListAPIView):
+class AllWorker(generics.ListAPIView):
+    """
+    Base API endpoint that show list of all workers
+    """
     serializer_class = SeekerSerializer
     permission_classes = []
     queryset = Seeker.objects.all()
 
 
-class Seeker(generics.RetrieveUpdateDestroyAPIView):
-    lookup_field = 'slug'
+class Worker(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Base API endpoint that display, update, delete worker info by passing the worker username (post and put will work if the user is logged in)
+    """
+    lookup_field = 'username'
     serializer_class = SeekerSerializer
     permission_classes = [IsOwnerOrReadOnly]
-    queryset = Seeker.objects.all()
+
+    def get_object(self):
+        qs = Seeker.objects.all()
+        query = self.kwargs.get('username')
+        obj = get_object_or_404(Seeker, identity__username=query)
+        return obj
+
+    # def get_queryset(self):
+    #     qs = Seeker.objects.all()
+    #     query = self.kwargs.get('username')
+    #     print(query)
+    #     worker = get_object_or_404(Seeker, slug=query)
+    #     if query is not None:
+    #         qs = worker  # qs.filter(Company=worker)
+    #         print(qs)
+    #     return qs
+
+    # qs = Seeker.objects.all()
+    # username = self.kwargs.get('username')
+    # if username is not None:
+    #     qs = qs.get(slug=username)
+    # return qs

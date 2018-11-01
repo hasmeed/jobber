@@ -9,8 +9,8 @@ def klass_pre_save_reciever(sender, instance, *args, **kwargs):
         instance.slug = unique_slug_generator(instance)
 
 class Identity(AbstractUser):
-    is_provider = models.BooleanField(default=False)
-    is_seeker = models.BooleanField(default=False)
+    is_user = models.BooleanField(default=False)
+    is_worker = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
 
     def get_account_type(self):

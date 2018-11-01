@@ -13,7 +13,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 class IsProviderOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            return request.user.is_provider == True
+            return request.user.is_user == True
 
     def has_object_permission(self, request, view, obj):
         return True
@@ -22,7 +22,7 @@ class IsProviderOrReadOnly(permissions.BasePermission):
 class IsSeekerOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            return request.user.is_seeker == True
+            return request.user.is_worker == True
 
     def has_object_permission(self, request, view, obj):
         return True
