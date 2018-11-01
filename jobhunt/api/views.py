@@ -12,7 +12,7 @@ class parentCategory(generics.ListCreateAPIView):
     Base API endpoint that shows all parent category and also accept post for authenticated user
     """
     serializer_class = CategorySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = []  # [permissions.IsAuthenticatedOrReadOnly]
     queryset = Category.objects.all()
 
 
@@ -21,7 +21,7 @@ class ServicesApi(generics.ListCreateAPIView):
     Base API endpoint that display all services and new service can also be posted to it by authenticated user
     """
     serializer_class = ServiceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = []  # [permissions.IsAuthenticatedOrReadOnly]
     queryset = Service.objects.all()
 
 
@@ -45,7 +45,7 @@ class NewWorker(generics.CreateAPIView):
     """
     lookup_field = 'pk'
     serializer_class = SeekerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = []  # [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(identity=self.request.user)
@@ -69,26 +69,10 @@ class Worker(generics.RetrieveUpdateDestroyAPIView):
     """
     lookup_field = 'username'
     serializer_class = SeekerSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = []  # [IsOwnerOrReadOnly]
 
     def get_object(self):
         qs = Seeker.objects.all()
         query = self.kwargs.get('username')
         obj = get_object_or_404(Seeker, identity__username=query)
         return obj
-
-    # def get_queryset(self):
-    #     qs = Seeker.objects.all()
-    #     query = self.kwargs.get('username')
-    #     print(query)
-    #     worker = get_object_or_404(Seeker, slug=query)
-    #     if query is not None:
-    #         qs = worker  # qs.filter(Company=worker)
-    #         print(qs)
-    #     return qs
-
-    # qs = Seeker.objects.all()
-    # username = self.kwargs.get('username')
-    # if username is not None:
-    #     qs = qs.get(slug=username)
-    # return qs
